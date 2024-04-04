@@ -1,73 +1,116 @@
-// Hent alle hullene fra HTML-dokumentet
-const holes = document.querySelectorAll('.hole');
+function setup() {
+    createCanvas(500,400);
+    mouseClicked();
+  };
 
-// Hent scoreboard-elementet fra HTML-dokumentet
-const scoreBoard = document.querySelector('.score');
+  var vinder = 0;
+  var moleX = 0;
+  var moleY = 0;
+  var start = 0;
+var milliseconds = 700;
+ 
+        
+// Sleep Function er hvormeget den søver indtil næste molen skal viderer
+/*function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+    break;
+   }
+   }
+   }*/
+  // https://stackoverflow.com/questions/56260065/js-delay-script-from-running
 
-// Initialiser score-variabel
-let score = 0;
+  
 
-// Initialiser timeUp-variabel
-let timeUp = false;
+  
+function mouseClicked() {
 
-// Funktion for å generere et tilfeldig tidspunkt mellom min og max
-function randomTime(min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-}
+  var distance = int(dist(mouseX, mouseY, moleX, moleY));
+  
+    if (distance<=50) {
+      console.log("mole trykket")
+      vinder = vinder+1;
+      console.log(vinder)
 
-// Funktion for å velge et tilfeldig hull
-function randomHole(holes) {
-    // Finn indeksen til et tilfeldig hull
-    const idx = Math.floor(Math.random() * holes.length);
-    
-    // Hent hullet fra indeksen
-    const hole = holes[idx];
-    
-    // Hvis det forrige hullet er det samme som dette, velg et nytt hull
-    if (hole === lastHole) {
-        console.log('duplicate hole');
-        return randomHole(holes);
     }
+
+
+}
+function draw() {
+
+
+  if ((new Date().getTime() - start) > milliseconds){
+    movemole();
+    start = new Date().getTime()
+  }
+
+
+
+
+ 
+ // console.log(possibleX);
+//  console.log(possibleY);
+ // console.log("-------")
+
+
+background(255,255,255);
+
+// Title
+fill(0,0,0);
+textSize(50);
+text("Whack  a  mole!", 30, 50);
+
+
+
+
+
+fill(0, 0, 0); // farve af hullerne
+
+
+
+
+/* Huller */
+
+rect(200,100,29,29);
+rect(100,100,29,29); // Første 3
+rect(300,100,29,29);
+
+rect(200,200,29,29);
+rect(100,200,29,29); // Anden 3 
+rect(300,200,29,29);
+
+rect(200,300,29,29);
+rect(100,300,29,29); // Tredje 3
+rect(300,300,29,29);
+
+textSize(20);
+text("Vinder:", 100,400)
+text(vinder, 170,400);
+
+// Opretes Molen
+
+fill(203,203,65);
+ellipse(moleX,moleY,20,20); 
+
+};
+
+
+function movemole(){
+    var possibleX = [115,215,315];
+    var possibleY = [115,215,315];
+
+    moleX = random(possibleX);
+    moleY = random(possibleY);
     
-    // Lagre det forrige hullet
-    lastHole = hole;
     
-    // Returner hullet
-    return hole;
+    
+
+
+
+
 }
 
-// Funksjon for å starte spillet
-function startGame() {
-    // Nullstill scoreboard
-    scoreBoard.textContent = 0;
-    
-    // Nullstill timeUp-variabel
-    timeUp = false;
-    
-    // Nullstill score-variabel
-    score = 0;
-    
-    // Start peep-funksjonen
-    peep();
-    
-    // Afslutt spillet etter 10 sekunder
-    setTimeout(() => timeUp = true, 10000);
-}
 
-// Funksjon for å håndtere klikk på hullene
-function whack(e) {
-    // Hvis klikket ikke er pålitelig (f.eks. fra en bot), returner funksjonen
-    if (!e.isTrusted) return;
-    
-    // Øk score
-    score++;
-    
-    // Fjern 'up'-klassen fra hullet for å skjule det
-    this.parentNode.classList.remove('up');
-    
-    // Oppdater scoreboard-elementet med den nye score-verdien
-    scoreBoard.textContent = score;
-}
 
-// Legg til klikk-hendelseslytter på alle hullene
-holes.forEach(hole => hole.addEventListener('click', whack));
+
+
