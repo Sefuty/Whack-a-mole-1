@@ -1,5 +1,10 @@
 function setup() {
-  createCanvas(900, 700);
+  // Ændret canvas størrelse til 1200x900 og centreret det på siden
+  var canvas = createCanvas(1200, 900);
+  var x = (windowWidth - width) / 2;
+  var y = (windowHeight - height) / 2;
+  canvas.position(x, y);
+
   start = millis();
 }
 
@@ -7,7 +12,17 @@ var vinder = 0;
 var moleX;
 var moleY;
 var start;
-var moletid = 900; // Tid mellem mole bevægelser
+var milliseconds = 900; // Tid mellem mole bevægelser
+var tegnmole = false;
+let moleimg;
+
+function preload(){
+  moleimg = loadImage("mole.png");
+
+}
+
+  
+
 
 function mouseClicked() {
   var distance = int(dist(mouseX, mouseY, moleX, moleY));
@@ -20,43 +35,52 @@ function mouseClicked() {
 
 function draw() {
   background(255);
-  
-  // Titel
+
+  // Title
   fill(0);
   textSize(50);
-  text("Whack a mole!", 30, 50);
+  text("Whack a mole!", width/2 - 150, 50); // Centered title
 
-  // Huller
+  // Holes
   fill(0);
-  rect(200, 100, 29, 29);
-  rect(100, 100, 29, 29);
-  rect(300, 100, 29, 29);
-  rect(200, 200, 29, 29);
-  rect(100, 200, 29, 29);
-  rect(300, 200, 29, 29);
-  rect(200, 300, 29, 29);
-  rect(100, 300, 29, 29);
-  rect(300, 300, 29, 29);
+  var holeSize = 40; // Size of the holes
+  var moleSize = 45 ; // Decreased size of the mole
+  var moleOffset = (holeSize - moleSize) / 2; // Offset to center the mole within the hole
+  rect(width/2 - 50 - moleOffset, height/2 - 100 - moleOffset, holeSize, holeSize); // Centered holes
+  rect(width/2 - 150 - moleOffset, height/2 - 100 - moleOffset, holeSize, holeSize);
+  rect(width/2 + 50 - moleOffset, height/2 - 100 - moleOffset, holeSize, holeSize);
+  rect(width/2 - 50 - moleOffset, height/2 - moleOffset, holeSize, holeSize);
+  rect(width/2 - 150 - moleOffset, height/2 - moleOffset, holeSize, holeSize);
+  rect(width/2 + 50 - moleOffset, height/2 - moleOffset, holeSize, holeSize);
+  rect(width/2 - 50 - moleOffset, height/2 + 100 - moleOffset, holeSize, holeSize);
+  rect(width/2 - 150 - moleOffset, height/2 + 100 - moleOffset, holeSize, holeSize);
+  rect(width/2 + 50 - moleOffset, height/2 + 100 - moleOffset, holeSize, holeSize);
 
-  // Vis vinder
+  // Show winner
   textSize(20);
-  text("Vinder:", 100, 400);
-  text(vinder, 170, 400);
+  text("Vinder:", width/2 - 50, height/2 + 200);
+  text(vinder, width/2 + 20, height/2 + 200);
 
-  // Tjek om tiden er gået for mole bevægelse
-  if (millis() - start > moletid) {
+  // Check if it's time for mole movement
+  if (millis() - start > milliseconds) {
     moveMole();
     start = millis();
   }
-
-  // Opret mole
-  fill(203, 203, 65);
-  ellipse(moleX, moleY, 20, 20);
+  
+  if (tegnmole == true) {
+    // Draw the mole image with adjustments for centering and size
+    image(moleimg, moleX - moleSize/2, moleY - moleSize/2, moleSize, moleSize); // Adjust the size and offset as needed
+  }
 }
 
+
+
+
 function moveMole() {
-  var possibleX = [115, 215, 315];
-  var possibleY = [115, 215, 315];
+  tegnmole = random() > 0.4 ? true : false;
+
+  var possibleX = [width/2 - 135, width/2 - 35, width/2 + 65]; // Centreret mulige X-koordinater
+  var possibleY = [height/2 - 85, height/2 + 15, height/2 + 115]; // Centreret mulige Y-koordinater
   moleX = random(possibleX);
   moleY = random(possibleY);
 }
