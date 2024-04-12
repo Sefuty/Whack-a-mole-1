@@ -3,7 +3,7 @@ var countdownDuration = 5000; // Varigheden af countdown i millisekunder (5 seku
 
 function setup() {
   // Ændrer canvas størrelse til 1300x700 og centrerer det på siden
-  var canvas = createCanvas(1500, 900);
+  var canvas = createCanvas(1300, 900);
   var x = (windowWidth - width) / 2;
   var y = (windowHeight - height) / 3;
   canvas.position(x, y);
@@ -13,9 +13,11 @@ function setup() {
   countdown = countdownDuration; // Sætter countdown til den fulde varighed ved starten
 
   // Opretter genstartsknap
-  var genstartKnap = createButton('Genstart spillet');
-  genstartKnap.position(x, y + height + 20);
-  genstartKnap.mousePressed(genstartSpil);
+  var GenstartKnap = createButton('Genstart');
+  GenstartKnap.position(x + 570, y + 640 + height - 850);
+  GenstartKnap.position()
+  GenstartKnap.mousePressed(GenstartSpil);
+  GenstartKnap.id('genstartKnap'); // Tilføj id'en "genstartKnap"
 }
 
 var vinder = 0; // Antal point vundet
@@ -24,7 +26,7 @@ var moleY; // Y-koordinat for muldvarpen
 var bombX; // X-koordinat for bomben
 var bombY; // Y-koordinat for bomben
 var start; // Starttidspunktet for spillet
-var milliseconds = 900; // Tid mellem muldvarpebevægelser
+var milliseconds = 660; // Tid mellem muldvarpebevægelser man kan skru op eller ned hvis den er for nemt/svært
 var tegnmole = false; // Angiver om muldvarpen skal tegnes
 var moleVisning = false; // Angiver om muldvarpen skal vises eller ej
 let moleimg; // Billedet af muldvarpen
@@ -32,7 +34,8 @@ var gameOver = false; // Angiver om spillet er slut
 let bombimg; // Billedet af bomben
 let highestScore = 0;
 
-function genstartSpil() {
+
+function GenstartSpil() {
   // Nulstil spilvariablerne og start et nyt spil
   vinder = 0;
   gameOver = false;
@@ -64,7 +67,7 @@ function mouseClicked() {
 }
 
 function draw() {
-  background(100, 100, 10); // Baggrundsfarve
+  background(160, 80, 51); // Baggrundsfarve
 
   // Titel
   fill(0);
@@ -84,7 +87,7 @@ function draw() {
     textSize(20);
     fill(255);
     textAlign(CENTER);
-    text("Tid tilbage: " + (countdown / 1000).toFixed(1), width / 2, height - 30);
+    text("Tid tilbage: " + (countdown / 1000).toFixed(1), width / 2.1, height - 60); //plasering af vores tid tilbage tekst
 
     // Tjekker om tiden er udløbet
     if (countdown <= 0) {
@@ -151,7 +154,7 @@ function moveMole() {
 
 function gameOverText() {
   fill(255, 0, 0);
-  textSize(40);
+  textSize(45);
   textAlign(CENTER, CENTER);
   text("Spillet er slut!", width / 2, height / 2); // Viser spillets sluttekst centralt
 }
