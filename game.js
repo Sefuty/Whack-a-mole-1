@@ -1,37 +1,47 @@
+var countdown; // Variabel til at holde styr på countdown-tiden
+var countdownDuration = 5000; // Varigheden af countdown i millisekunder (5 sekunder)
+
 function setup() {
-
-
-// center canvas 1200,900
-  var canvas = createCanvas(1200, 900);
+  // Ændrer canvas størrelse til 1300x700 og centrerer det på siden
+  var canvas = createCanvas(1500, 900);
   var x = (windowWidth - width) / 2;
-  var y = (windowHeight - height) / 2;
+  var y = (windowHeight - height) / 3;
   canvas.position(x, y);
 
-  start = millis();
-  startTime = millis(); // starttid for countdown
+  start = millis(); // Gemmer starttidspunktet for spillet
+
+  countdown = countdownDuration; // Sætter countdown til den fulde varighed ved starten
+
+  // Opretter genstartsknap
+  var genstartKnap = createButton('Genstart spillet');
+  genstartKnap.position(x, y + height + 20);
+  genstartKnap.mousePressed(genstartSpil);
 }
 
-var vinder = 0;
-var moleX;
-var moleY;
-var bombX;  
-var bombY;
-var start;
-var milliseconds = 900; // Tid mellem mole movement
-var tegnmole = false;
-var moleVisning = false; //  variabel Der styre om molen skal vises eller ej
-var bombVisning = false; // styre om bomben skal vises eller ej
-let moleimg;
-var gameOver = false; // gameover sat til false
-let bombimg;
-var highScore = 0; // hightscore
-var startTime; // holder starttid værdien
-var countdownDuration = 5000; // cowndown i millisekunder
-var countdown; // holder på countdown værdien
+var vinder = 0; // Antal point vundet
+var moleX; // X-koordinat for muldvarpen
+var moleY; // Y-koordinat for muldvarpen
+var bombX; // X-koordinat for bomben
+var bombY; // Y-koordinat for bomben
+var start; // Starttidspunktet for spillet
+var milliseconds = 900; // Tid mellem muldvarpebevægelser
+var tegnmole = false; // Angiver om muldvarpen skal tegnes
+var moleVisning = false; // Angiver om muldvarpen skal vises eller ej
+let moleimg; // Billedet af muldvarpen
+var gameOver = false; // Angiver om spillet er slut
+let bombimg; // Billedet af bomben
+let highestScore = 0;
+
+function genstartSpil() {
+  // Nulstil spilvariablerne og start et nyt spil
+  vinder = 0;
+  gameOver = false;
+  setup(); // Kald setup-funktionen for at starte et nyt spil
+}
 
 function preload(){
-  moleimg = loadImage("mole.png");
-  bombimg = loadImage("bomb.png")
+  moleimg = loadImage("mole.png"); // Indlæser billedet af muldvarpen
+  bombimg = loadImage("bomb.png"); // Indlæser billedet af bomben
 }
 
 function mouseClicked() {
@@ -40,112 +50,108 @@ function mouseClicked() {
     var distanceToBomb = int(dist(mouseX, mouseY, bombX, bombY));
     
     if (distanceToMole <= 50) {
-      console.log("Mole clicked!");
-      vinder++;
-      if (vinder > highScore) {
-        highScore = vinder; // ny high score
+      console.log("Muldvarp blev klikket!");
+      vinder++; // Øger antallet af point
+      if (vinder > highestScore) {
+        highestScore = vinder; // Opdaterer højeste score
       }
-      startTime = millis(); // starter countdown tidenigen
-       } else if (distanceToBomb <= 50) { // 
-      console.log("Bomb clicked! Game over!");
-      gameOver = true;
+      countdown = countdownDuration; // Nulstiller countdown ved at klikke på muldvarpen
+    } else if (distanceToBomb <= 30) { // Justerer radius i forhold til bombestørrelse
+      console.log("Bomben blev klikket! Spillet er slut!");
+      gameOver = true; // Angiver at spillet er slut
     }
   }
 }
 
 function draw() {
-  background(0, 255, 0);
+  background(100, 100, 10); // Baggrundsfarve
 
-  
+  // Titel
   fill(0);
-  textSize(50);
-  text("Whack a mole!", width / 2 - 150, 50); 
+  textSize(20);
+  text("Whack a mole!", width / 2 - 1, 50); // Centreret titel
 
-  // huller
-  fill(100,42,42); // brun
-  var holeSize = 60; //hul størrelse
-  var moleSize = 90; // mole størrelse
-  var moleOffsetX = 10; // x position i forhold til firkanten
-  var moleOffsetY = 20; //  x position i forhold til firkanten
+  fill(0)
+  text("Bedste Score: " + highestScore, 100, 30); // Viser den højeste score
 
-  // tegn holes, men denne (SKAL FORKLARES GRUNDIG)
+  // Viser den aktuelle score
+
+  // Tjekker om det er tid til at tælle ned
+  if (!gameOver && countdown > 0) {
+    countdown -= deltaTime; // Reducerer countdown med den forløbne tid siden sidste frame
+
+    // Viser countdown-tiden
+    textSize(20);
+    fill(255);
+    textAlign(CENTER);
+    text("Tid tilbage: " + (countdown / 1000).toFixed(1), width / 2, height - 30);
+
+    // Tjekker om tiden er udløbet
+    if (countdown <= 0) {
+      gameOver = true; // Angiver at spillet er slut
+    }
+  }
+
+  // Huller
+  fill(100,42,42);
+  var holeSize = 60; // Størrelse på hullerne
+  var moleSize = 90; // Mindsket størrelse af muldvarpen
+  var moleOffsetX = 10; // Justerer muldvarpens X-offset (til venstre)
+  var moleOffsetY = 20; // Justerer muldvarpens Y-offset mod midten af hullet
+
+  // Tegner hullerne
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       rect(width / 2 - 150 + j * 100 - moleOffsetX, height / 2 - 100 + i * 100 - moleOffsetY, holeSize, holeSize);
     }
   }
 
-  // hvis vinder/score
+  // Viser vinder
   textSize(20);
-  text("Vinder:", width / 2 - 50, height / 2 + 200);
+  text("Point:", width / 2 - 50, height / 2 + 200);
   text(vinder, width / 2 + 20, height / 2 + 200);
 
-  // tjekker tiden for movemole functionen
+  // Tjekker om det er tid til muldvarpens bevægelse
   if (millis() - start > milliseconds) {
-    moveMole();
-    start = millis();
+    moveMole(); // Kalder moveMole-funktionen for at flytte muldvarpen
+    start = millis(); // Opdaterer starttidspunktet
   }
 
-  // tegner hvis den er sat til true
   if (moleVisning) {
-    // Draw the mole image with adjustments for centering and size
-    image(moleimg, moleX - moleSize / 2, moleY - moleSize / 2, moleSize, moleSize); // Adjust the size and offset as needed
+    // Tegner billedet af muldvarpen med justeringer for centrering og størrelse
+    image(moleimg, moleX - moleSize / 2, moleY - moleSize / 2, moleSize, moleSize);
   }
   
-  // tegner hvis den er sat til true
-  if (bombVisning) {
-    image(bombimg, bombX - 45, bombY - 45, 90, 90); // Adjust size and offset as needed
-  }
-  // tjekker hvis det er gameover
+  // Tegner bomben
+  image(bombimg, bombX - 30, bombY - 30, 60, 60);
+
+  // Tjekker om spillet er slut og viser spillets sluttekst
   if (gameOver) {
     gameOverText();
-  }
-
-  // tjekker hvis det er gameover pågrund af ingen tid
-  if (!gameOver && millis() - startTime > countdownDuration) {
-    console.log("Time's up! Game over!");
-    gameOver = true;
-  }
-
-  //opdatere countdown
-  countdown = countdownDuration - (millis() - startTime);
-  if (countdown <= 0 && !gameOver) {
-    console.log("Time's up! Game over!");
-    gameOver = true;
-  } else {
-    // display countdown
-    fill(255);
-    textSize(30);
-    text("Time left: " + (countdown / 1000).toFixed(1) + " seconds", width / 2, height - 50);
   }
 }
 
 function moveMole() {
-  var possibleX = [width/2 - 135, width/2 - 35, width/2 + 65]; // centreret mulige X pos
-  var possibleY = [height/2 - 85, height/2 + 15, height/2 + 115]; // Centreret mulige Y pos
+  var possibleX = [width/2 - 135, width/2 - 35, width/2 + 65]; // Centrerede mulige X-koordinater
+  var possibleY = [height/2 - 85, height/2 + 15, height/2 + 115]; // Centrerede mulige Y-koordinater
 
-// random position
+  // Tildeler tilfældigt muldvarpens position
   moleX = random(possibleX);
   moleY = random(possibleY);
 
-  //random pos for bomben
+  // Tildeler tilfældigt bombens position, og sikrer at den ikke er i samme felt som muldvarpen
   do {
     bombX = random(possibleX);
     bombY = random(possibleY);
   } while (bombX === moleX && bombY === moleY);
 
-  // 
-  moleVisning = random() > 0.2; //
-
-  bombVisning = random() > 0.2; //
-
-  milliseconds = 900 - vinder * 50;
-  milliseconds = max(100, milliseconds); //
+  // Tilfældigt sætter moleVisning til sand eller falsk for at skabe perioder med stilhed
+  moleVisning = random() > 0.2; // Juster tærsklen efter behov
 }
 
 function gameOverText() {
   fill(255, 0, 0);
   textSize(40);
   textAlign(CENTER, CENTER);
-  text("Game Over!", width / 2, height / 2);
+  text("Spillet er slut!", width / 2, height / 2); // Viser spillets sluttekst centralt
 }
